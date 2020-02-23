@@ -242,6 +242,15 @@ var renderPushChunks = function(chunks) {
             contents.className = 'chat-bubble-contents'
             contents.title = push.created ? moment(Math.floor(push.created * 1000)).format('llll') : ''
 
+            var contentCopy = document.createElement('div')
+            contentCopy.className = 'chat-bubble-contents'
+            contentCopy.innerHTML = "<svg width='16' height='16' viewBox='0 0 16 16' style=''><g transform='scale(0.015625 0.015625)'><path fill='white' d='M640 256v-256h-448l-192 192v576h384v256h640v-768h-384zM192 90.51v101.49h-101.49l101.49-101.49zM64 704v-448h192v-192h320v192l-192 192v256h-320zM576 346.51v101.49h-101.49l101.49-101.49zM960 960h-512v-448h192v-192h320v640z'></path></g></svg>"
+            contentCopy.setAttribute("style", "cursor: pointer;")
+            if (onLeft){contentCopy.setAttribute("style", "float: right;")}
+            else {contentCopy.setAttribute("style", "float: left;")}
+            var copyData = ""
+
+
             if (push.title) {
                 var pTitle = document.createElement('p')
                 pTitle.className = 'chat-title'
@@ -253,6 +262,7 @@ var renderPushChunks = function(chunks) {
                 var pBody = document.createElement('p')
                 pBody.className = 'chat-body'
                 utils.linkify(push.body, pBody)
+                copyData = push.body
                 contents.appendChild(pBody)
             }
 
@@ -304,7 +314,7 @@ var renderPushChunks = function(chunks) {
                         window.open(push.file_url)
                     }
                 }
-                
+
                 if (!loadedPushImages[img.src]) {
                     img.onload = function() {
                         loadedPushImages[img.src] = true
@@ -327,6 +337,7 @@ var renderPushChunks = function(chunks) {
             } else {
                 var url = push.url || push.file_url
                 if (url) {
+                    copyData = url
                     var a = document.createElement('a')
                     a.className = 'chat-url'
                     a.href = url
@@ -362,6 +373,12 @@ var renderPushChunks = function(chunks) {
             var bubble = document.createElement('div')
             bubble.className = 'chat-bubble'
             bubble.appendChild(contents)
+
+            contentCopy.onclick = function(){
+                copyMsg(this, copyData)
+            }
+            bubble.appendChild(contentCopy)
+
 
             bubble.setAttribute('data-push-iden', push.iden)
 
